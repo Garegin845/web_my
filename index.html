@@ -4,9 +4,30 @@
 <meta charset="UTF-8">
 <title>MyBot WebApp</title>
 <style>
-body { font-family: Arial; text-align: center; padding: 50px; }
-input, button { padding: 10px; margin: 10px; font-size: 16px; }
-#main { display: none; }
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    padding: 50px;
+    background: #f0f0f5;
+}
+input, button {
+    padding: 10px;
+    margin: 10px;
+    font-size: 16px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+button {
+    cursor: pointer;
+    transition: 0.3s;
+}
+button:hover {
+    background-color: #0078d7;
+    color: white;
+}
+#main {
+    display: none;
+}
 </style>
 </head>
 <body>
@@ -14,9 +35,8 @@ input, button { padding: 10px; margin: 10px; font-size: 16px; }
 <div id="auth">
     <h1>Բարի գալուստ MyBot WebApp 🎉</h1>
     <p>Մուտք գործի՛ր կամ գրանցվիր:</p>
-    <input type="text" id="username" placeholder="Օգտվողի անուն">
-    <input type="password" id="password" placeholder="Գաղտնաբառ">
-    <br>
+    <input type="text" id="username" placeholder="Օգտվողի անուն"><br>
+    <input type="password" id="password" placeholder="Գաղտնաբառ"><br>
     <button onclick="login()">Մուտք</button>
     <button onclick="register()">Գրանցում</button>
 </div>
@@ -30,11 +50,16 @@ input, button { padding: 10px; margin: 10px; font-size: 16px; }
 function sendData(action){
     const username = document.getElementById("username").value;
     const password = document.getElementById("password").value;
-    if(!username || !password){ alert("Լրացրեք բոլոր դաշտերը!"); return; }
+
+    if(!username || !password){
+        alert("Լրացրեք բոլոր դաշտերը!");
+        return;
+    }
 
     if(window.Telegram.WebApp){
         Telegram.WebApp.sendData(JSON.stringify({action, username, password}));
     }
+
     if(action === "login"){ showMain(username); }
 }
 
@@ -42,9 +67,9 @@ function register(){ sendData("register"); }
 function login(){ sendData("login"); }
 
 function showMain(username){
-    document.getElementById("auth").style.display="none";
-    document.getElementById("main").style.display="block";
-    document.getElementById("user-display").innerText=username;
+    document.getElementById("auth").style.display = "none";
+    document.getElementById("main").style.display = "block";
+    document.getElementById("user-display").innerText = username;
 }
 </script>
 
