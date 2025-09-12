@@ -1,79 +1,63 @@
 <!DOCTYPE html>
 <html lang="hy">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>MyBot WebApp</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: linear-gradient(135deg, #1e3c72, #2a5298);
-      color: white;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      margin: 0;
+    :root{--bg1:#0f172a;--bg2:#0ea5e9}
+    body{
+      margin:0;font-family:Inter,ui-sans-serif,system-ui,Arial;
+      background:linear-gradient(135deg,var(--bg1),#06243a);
+      color:#fff;display:flex;align-items:center;justify-content:center;height:100vh;
     }
-    .container {
-      background: rgba(255,255,255,0.1);
-      padding: 30px;
-      border-radius: 15px;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.3);
-      width: 300px;
-      text-align: center;
+    .card{
+      width:340px;padding:28px;border-radius:14px;
+      background:linear-gradient(180deg,rgba(255,255,255,0.03),rgba(255,255,255,0.01));
+      box-shadow:0 10px 30px rgba(2,6,23,0.6);text-align:center;
     }
-    input {
-      width: 90%;
-      padding: 10px;
-      margin: 10px 0;
-      border: none;
-      border-radius: 10px;
+    h1{margin:0 0 14px;font-size:20px}
+    input{width:100%;padding:12px;border-radius:10px;border:none;margin:8px 0;font-size:15px}
+    .row{display:flex;gap:8px;justify-content:center}
+    button{
+      padding:10px 12px;border-radius:10px;border:none;font-weight:600;cursor:pointer;
+      transition:transform .18s,box-shadow .18s;
+      background:linear-gradient(90deg,var(--bg2),#7c3aed);color:#fff;
     }
-    button {
-      width: 45%;
-      padding: 10px;
-      margin: 10px 5px;
-      border: none;
-      border-radius: 10px;
-      background: #4CAF50;
-      color: white;
-      font-weight: bold;
-      cursor: pointer;
-      transition: transform 0.2s;
-    }
-    button:hover {
-      transform: scale(1.05);
-    }
-    .register {
-      background: #2196F3;
-    }
+    button:hover{transform:translateY(-4px);box-shadow:0 10px 30px rgba(12,30,60,0.35)}
+    .btn-secondary{background:linear-gradient(90deg,#10b981,#06b6d4)}
+    small{opacity:.85;display:block;margin-top:10px;color:#cfe9ff}
   </style>
 </head>
 <body>
-  <div class="container">
-    <h2>Բարի գալուստ MyBot WebApp 🎉</h2>
-    <input type="text" id="username" placeholder="Օգտանուն">
-    <input type="password" id="password" placeholder="Գաղտնաբառ">
-    <div>
-      <button onclick="sendData('login')">Մուտք</button>
-      <button class="register" onclick="sendData('register')">Գրանցում</button>
+  <div class="card" role="main">
+    <h1>Բարի գալուստ MyBot WebApp</h1>
+    <input id="username" type="text" placeholder="Օգտանուն" autocomplete="username" />
+    <input id="password" type="password" placeholder="Գաղտնաբառ" autocomplete="current-password" />
+    <div class="row" style="margin-top:12px">
+      <button onclick="onAction('login')">Մուտք</button>
+      <button class="btn-secondary" onclick="onAction('register')">Գրանցում</button>
     </div>
+    <small>Տվյալները ուղարկվելու են անմիջապես բոտին և չեն պահպանվում էջում բացահայտ տեսքով</small>
   </div>
 
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <script>
-    function sendData(action) {
+    function onAction(action){
       const username = document.getElementById("username").value.trim();
-      const password = document.getElementById("password").value.trim();
+      const password = document.getElementById("password").value;
+      if(!username || !password){ alert("Խնդրում եմ լրացրեք բոլոր դաշտերը"); return; }
 
-      if (!username || !password) {
-        alert("Խնդրում եմ լրացրեք բոլոր դաշտերը");
-        return;
+      const payload = { action, username, password };
+
+      if(window.Telegram && Telegram.WebApp && Telegram.WebApp.sendData){
+        Telegram.WebApp.sendData(JSON.stringify(payload));
+        // optional: close webapp to show bot response faster
+        Telegram.WebApp.close();
+      } else {
+        // fallback for testing in browser (not in Telegram)
+        alert("Not opened inside Telegram WebApp. JSON:\n" + JSON.stringify(payload));
       }
-
-      const data = { action, username, password };
-      Telegram.WebApp.sendData(JSON.stringify(data));
-      Telegram.WebApp.close(); // Փակել WebApp-ը ուղարկելուց հետո
     }
   </script>
 </body>
