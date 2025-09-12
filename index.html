@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Գրանցում / Մուտք</title>
 <style>
-body { font-family: Arial, sans-serif; display:flex; justify-content:center; align-items:center; height:100vh; margin:0; background:#f0f0f0; }
+body { font-family: Arial; display:flex; justify-content:center; align-items:center; height:100vh; margin:0; background:#f0f0f0; }
 .container { width:90%; max-width:400px; }
 form { background:#fff; padding:30px; border-radius:10px; box-shadow:0 0 20px rgba(0,0,0,0.2); display:flex; flex-direction:column; }
 input { margin:10px 0; padding:10px; border-radius:5px; border:1px solid #ccc; font-size:16px; }
@@ -16,7 +16,6 @@ h2 { text-align:center; margin-bottom:20px; }
 .error { color:red; font-weight:bold; text-align:center; margin-top:10px; }
 .switch-btn { margin-top:10px; background:#28a745; }
 .switch-btn:hover { background:#218838; }
-.userlist { margin-top:15px; background:#f9f9f9; padding:10px; border-radius:5px; max-height:150px; overflow:auto; font-size:14px; }
 </style>
 </head>
 <body>
@@ -30,7 +29,6 @@ h2 { text-align:center; margin-bottom:20px; }
     <div class="error" id="errorMessage"></div>
     <button type="button" class="switch-btn" id="switchBtn">Մուտք</button>
   </form>
-  <div class="userlist" id="userList">📋 Գրանցված օգտատերեր կցուցադրվեն այստեղ</div>
 </div>
 
 <script>
@@ -48,25 +46,14 @@ document.getElementById("authForm").addEventListener("submit", function(e){
     e.preventDefault();
     const username = document.getElementById("username").value.trim();
     const password = document.getElementById("password").value;
-
     if(!username || !password){ document.getElementById("errorMessage").textContent="Լրացրու բոլոր դաշտերը"; return; }
 
-    // ուղարկել բոտին
     tg.sendData(JSON.stringify({action:mode, username, password}));
+
     document.getElementById("successMessage").textContent = mode==="register" ? "✅ Գրանցվեցիր!" : "🔑 Մուտք ուղարկված!";
     document.getElementById("errorMessage").textContent="";
     this.reset();
 });
-
-// WebApp հնարավորություն տալիս ցուցադրել օգտատերերի ցանկը
-function updateUserList(users){
-    const listDiv = document.getElementById("userList");
-    if(users.length===0) listDiv.textContent="📋 Գրանցված օգտատերեր չկան";
-    else listDiv.textContent="📋 Գրանցված օգտատերեր: "+users.join(", ");
-}
-
-// Հնարավոր է, բոտից ուղարկել WebApp-ին, բայց Telegram WebApp sandbox-ով հնարավոր չէ ուղիղ JS-ին պատասխան:
-// Կարող ես օգտատերերի ցուցակը ստուգել բոտի պատասխանից
 </script>
 </body>
 </html>
