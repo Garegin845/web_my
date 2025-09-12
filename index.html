@@ -5,15 +5,15 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Գրանցում / Մուտք</title>
 <style>
-body { font-family: Arial, sans-serif; display:flex; justify-content:center; align-items:center; height:100vh; background:#f0f0f0; margin:0; }
-.container { display:flex; flex-direction:column; align-items:center; width:90%; max-width:400px; }
-form { background:white; padding:30px; border-radius:10px; box-shadow:0 0 20px rgba(0,0,0,0.2); display:flex; flex-direction:column; width:100%; }
+body { font-family: Arial, sans-serif; display:flex; justify-content:center; align-items:center; height:100vh; margin:0; background:#f0f0f0; }
+.container { width:90%; max-width:400px; }
+form { background:#fff; padding:30px; border-radius:10px; box-shadow:0 0 20px rgba(0,0,0,0.2); display:flex; flex-direction:column; }
 input { margin:10px 0; padding:10px; border-radius:5px; border:1px solid #ccc; font-size:16px; }
 button { padding:10px; border:none; border-radius:5px; background:#007BFF; color:white; cursor:pointer; font-size:16px; margin-top:10px; }
 button:hover { background:#0056b3; }
 h2 { text-align:center; margin-bottom:20px; }
-.success { color: green; font-weight:bold; margin-top:10px; text-align:center; }
-.error { color: red; font-weight:bold; margin-top:10px; text-align:center; }
+.success { color:green; font-weight:bold; text-align:center; margin-top:10px; }
+.error { color:red; font-weight:bold; text-align:center; margin-top:10px; }
 .switch-btn { margin-top:10px; background:#28a745; }
 .switch-btn:hover { background:#218838; }
 </style>
@@ -33,23 +33,13 @@ h2 { text-align:center; margin-bottom:20px; }
 
 <script>
 const tg = window.Telegram.WebApp;
-
-let mode = "register"; // initial mode
+let mode = "register";
 
 document.getElementById("switchBtn").addEventListener("click", function(){
-    if(mode === "register"){
-        mode = "login";
-        document.getElementById("formTitle").textContent = "Մուտք";
-        document.getElementById("submitBtn").textContent = "Մուտք գործել";
-        this.textContent = "Գրանցում";
-    } else {
-        mode = "register";
-        document.getElementById("formTitle").textContent = "Գրանցում";
-        document.getElementById("submitBtn").textContent = "Գրանցվել";
-        this.textContent = "Մուտք";
-    }
-    document.getElementById("successMessage").textContent = "";
-    document.getElementById("errorMessage").textContent = "";
+    if(mode==="register"){ mode="login"; document.getElementById("formTitle").textContent="Մուտք"; document.getElementById("submitBtn").textContent="Մուտք գործել"; this.textContent="Գրանցում"; }
+    else{ mode="register"; document.getElementById("formTitle").textContent="Գրանցում"; document.getElementById("submitBtn").textContent="Գրանցվել"; this.textContent="Մուտք"; }
+    document.getElementById("successMessage").textContent="";
+    document.getElementById("errorMessage").textContent="";
 });
 
 document.getElementById("authForm").addEventListener("submit", function(e){
@@ -57,16 +47,12 @@ document.getElementById("authForm").addEventListener("submit", function(e){
     const username = document.getElementById("username").value.trim();
     const password = document.getElementById("password").value;
 
-    if(!username || !password){
-        document.getElementById("errorMessage").textContent = "Լրացրու բոլոր դաշտերը";
-        return;
-    }
+    if(!username || !password){ document.getElementById("errorMessage").textContent="Լրացրու բոլոր դաշտերը"; return; }
 
-    // Send data to bot
-    tg.sendData(JSON.stringify({action: mode, username, password}));
+    tg.sendData(JSON.stringify({action:mode, username, password}));
 
-    document.getElementById("successMessage").textContent = mode === "register" ? "✅ Գրանցումը հաջողվեց!" : "🔑 Մուտք ուղարկված!";
-    document.getElementById("errorMessage").textContent = "";
+    document.getElementById("successMessage").textContent = mode==="register" ? "✅ Գրանցումը հաջողվեց!" : "🔑 Մուտք ուղարկված!";
+    document.getElementById("errorMessage").textContent="";
     this.reset();
 });
 </script>
