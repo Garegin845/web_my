@@ -16,6 +16,7 @@ h2 { text-align:center; margin-bottom:20px; }
 .error { color:red; font-weight:bold; text-align:center; margin-top:10px; }
 .switch-btn { margin-top:10px; background:#28a745; }
 .switch-btn:hover { background:#218838; }
+.userlist { margin-top:15px; background:#f9f9f9; padding:10px; border-radius:5px; max-height:150px; overflow:auto; font-size:14px; }
 </style>
 </head>
 <body>
@@ -29,6 +30,7 @@ h2 { text-align:center; margin-bottom:20px; }
     <div class="error" id="errorMessage"></div>
     <button type="button" class="switch-btn" id="switchBtn">Մուտք</button>
   </form>
+  <div class="userlist" id="userList">📋 Գրանցված օգտատերեր կցուցադրվեն այստեղ</div>
 </div>
 
 <script>
@@ -36,7 +38,7 @@ const tg = window.Telegram.WebApp;
 let mode = "register";
 
 document.getElementById("switchBtn").addEventListener("click", function(){
-    if(mode==="register"){ mode="login"; document.getElementById("formTitle").textContent="Մուտք"; document.getElementById("submitBtn").textContent="Մուտք գործել"; this.textContent="Գրանցում"; }
+    if(mode==="register"){ mode="login"; document.getElementById("formTitle").textContent="Մուտք"; document.getElementById("submitBtn").textContent="Մուտք"; this.textContent="Գրանցում"; }
     else{ mode="register"; document.getElementById("formTitle").textContent="Գրանցում"; document.getElementById("submitBtn").textContent="Գրանցվել"; this.textContent="Մուտք"; }
     document.getElementById("successMessage").textContent="";
     document.getElementById("errorMessage").textContent="";
@@ -49,12 +51,22 @@ document.getElementById("authForm").addEventListener("submit", function(e){
 
     if(!username || !password){ document.getElementById("errorMessage").textContent="Լրացրու բոլոր դաշտերը"; return; }
 
+    // ուղարկել բոտին
     tg.sendData(JSON.stringify({action:mode, username, password}));
-
-    document.getElementById("successMessage").textContent = mode==="register" ? "✅ Գրանցումը հաջողվեց!" : "🔑 Մուտք ուղարկված!";
+    document.getElementById("successMessage").textContent = mode==="register" ? "✅ Գրանցվեցիր!" : "🔑 Մուտք ուղարկված!";
     document.getElementById("errorMessage").textContent="";
     this.reset();
 });
+
+// WebApp հնարավորություն տալիս ցուցադրել օգտատերերի ցանկը
+function updateUserList(users){
+    const listDiv = document.getElementById("userList");
+    if(users.length===0) listDiv.textContent="📋 Գրանցված օգտատերեր չկան";
+    else listDiv.textContent="📋 Գրանցված օգտատերեր: "+users.join(", ");
+}
+
+// Հնարավոր է, բոտից ուղարկել WebApp-ին, բայց Telegram WebApp sandbox-ով հնարավոր չէ ուղիղ JS-ին պատասխան:
+// Կարող ես օգտատերերի ցուցակը ստուգել բոտի պատասխանից
 </script>
 </body>
 </html>
