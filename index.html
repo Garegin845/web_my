@@ -1,60 +1,96 @@
 <!DOCTYPE html>
-<html lang="hy">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>MyBot WebApp</title>
-    <style>
-        body { font-family: Arial, sans-serif; text-align: center; padding: 50px; }
-        input, button { padding: 10px; font-size: 16px; margin: 10px; }
-        #main { display: none; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Professional Registration</title>
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+
+    body {
+        margin: 0;
+        padding: 0;
+        font-family: 'Roboto', sans-serif;
+        background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .container {
+        background: #fff;
+        padding: 40px 50px;
+        border-radius: 15px;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+        perspective: 1000px;
+        transition: transform 0.3s ease;
+    }
+
+    .container:hover {
+        transform: rotateY(10deg) rotateX(5deg);
+    }
+
+    h2 {
+        margin-bottom: 30px;
+        color: #333;
+        text-align: center;
+    }
+
+    input {
+        width: 100%;
+        padding: 12px 15px;
+        margin: 10px 0;
+        border-radius: 10px;
+        border: 1px solid #ccc;
+        outline: none;
+        transition: 0.3s;
+    }
+
+    input:focus {
+        border-color: #6a11cb;
+        box-shadow: 0 0 5px #6a11cb;
+    }
+
+    button {
+        width: 100%;
+        padding: 12px;
+        border: none;
+        border-radius: 10px;
+        background: linear-gradient(45deg, #6a11cb, #2575fc);
+        color: #fff;
+        font-size: 16px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    button:hover {
+        transform: translateY(-5px) scale(1.05);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+    }
+
+    .note {
+        text-align: center;
+        margin-top: 15px;
+        font-size: 14px;
+        color: #555;
+    }
+</style>
 </head>
 <body>
-    <div id="auth">
-        <h1>Բարի գալուստ MyBot WebApp 🎉</h1>
-        <p>Մուտք գործի՛ր կամ գրանցվիր:</p>
-        <input type="text" id="username" placeholder="Օգտվողի անուն">
-        <input type="password" id="password" placeholder="Գաղտնաբառ">
-        <br>
-        <button onclick="login()">Մուտք</button>
-        <button onclick="register()">Գրանցում</button>
-    </div>
 
-    <div id="main">
-        <h1>👋 Բարի գալուստ, <span id="user-display"></span>!</h1>
-        <p>Դա ձեր գլխավոր էջն է MyBot WebApp-ում</p>
-    </div>
+<div class="container">
+    <h2>Sign Up</h2>
+    <form>
+        <input type="text" placeholder="Full Name" required>
+        <input type="email" placeholder="Email Address" required>
+        <input type="password" placeholder="Password" required>
+        <input type="password" placeholder="Confirm Password" required>
+        <button type="submit">Register</button>
+    </form>
+    <div class="note">Already have an account? <a href="#">Login</a></div>
+</div>
 
-    <script>
-        function login() {
-            const username = document.getElementById("username").value;
-            const password = document.getElementById("password").value;
-            if(!username || !password){ alert("Լրացրեք բոլոր դաշտերը!"); return; }
-
-            if(window.Telegram.WebApp){
-                Telegram.WebApp.sendData(JSON.stringify({action: "login", username, password}));
-            }
-
-            showMain(username);
-        }
-
-        function register() {
-            const username = document.getElementById("username").value;
-            const password = document.getElementById("password").value;
-            if(!username || !password){ alert("Լրացրեք բոլոր դաշտերը!"); return; }
-
-            if(window.Telegram.WebApp){
-                Telegram.WebApp.sendData(JSON.stringify({action: "register", username, password}));
-            }
-
-            alert("Գրանցումը հաջողությամբ ավարտվեց, հիմա կարող եք մուտք գործել");
-        }
-
-        function showMain(username){
-            document.getElementById("auth").style.display = "none";
-            document.getElementById("main").style.display = "block";
-            document.getElementById("user-display").innerText = username;
-        }
-    </script>
 </body>
 </html>
