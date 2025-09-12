@@ -5,34 +5,55 @@
 <title>MyBot WebApp</title>
 <style>
 body {
-    font-family: Arial, sans-serif;
-    text-align: center;
-    padding: 50px;
-    background: #f0f0f5;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #1e3c72, #2a5298);
+    color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
 }
-input, button {
-    padding: 10px;
-    margin: 10px;
+.container {
+    background: rgba(255,255,255,0.05);
+    padding: 40px;
+    border-radius: 15px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+    text-align: center;
+    width: 350px;
+}
+h1 { margin-bottom: 20px; font-size: 24px; }
+input {
+    width: 80%;
+    padding: 12px;
+    margin: 10px 0;
+    border-radius: 8px;
+    border: none;
     font-size: 16px;
-    border-radius: 5px;
-    border: 1px solid #ccc;
 }
 button {
+    width: 40%;
+    padding: 12px;
+    margin: 10px 5px;
+    border-radius: 8px;
+    border: none;
+    font-size: 16px;
+    font-weight: bold;
+    background: #0078d7;
+    color: white;
     cursor: pointer;
-    transition: 0.3s;
+    transition: transform 0.3s, box-shadow 0.3s;
 }
 button:hover {
-    background-color: #0078d7;
-    color: white;
+    transform: translateY(-5px) scale(1.05);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.4);
 }
-#main {
-    display: none;
-}
+#main { display: none; }
 </style>
 </head>
 <body>
 
-<div id="auth">
+<div class="container" id="auth">
     <h1>Բարի գալուստ MyBot WebApp 🎉</h1>
     <p>Մուտք գործի՛ր կամ գրանցվիր:</p>
     <input type="text" id="username" placeholder="Օգտվողի անուն"><br>
@@ -41,21 +62,19 @@ button:hover {
     <button onclick="register()">Գրանցում</button>
 </div>
 
-<div id="main">
+<div class="container" id="main">
     <h1>Բարի գալուստ, <span id="user-display"></span>!</h1>
     <p>Դա ձեր գլխավոր էջն է MyBot WebApp-ում</p>
 </div>
 
 <script>
+// Հեշտ ֆունկցիա տվյալ ուղարկելու համար Bot-ին
 function sendData(action){
-    const username = document.getElementById("username").value;
-    const password = document.getElementById("password").value;
+    const username = document.getElementById("username").value.trim();
+    const password = document.getElementById("password").value.trim();
+    if(!username || !password){ alert("Լրացրեք բոլոր դաշտերը!"); return; }
 
-    if(!username || !password){
-        alert("Լրացրեք բոլոր դաշտերը!");
-        return;
-    }
-
+    // Telegram WebApp API
     if(window.Telegram.WebApp){
         Telegram.WebApp.sendData(JSON.stringify({action, username, password}));
     }
@@ -67,9 +86,9 @@ function register(){ sendData("register"); }
 function login(){ sendData("login"); }
 
 function showMain(username){
-    document.getElementById("auth").style.display = "none";
-    document.getElementById("main").style.display = "block";
-    document.getElementById("user-display").innerText = username;
+    document.getElementById("auth").style.display="none";
+    document.getElementById("main").style.display="block";
+    document.getElementById("user-display").innerText=username;
 }
 </script>
 
