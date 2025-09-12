@@ -42,6 +42,10 @@ button {
 button:hover {
     transform: scale(1.1);
 }
+#status {
+    margin-top: 15px;
+    font-weight: bold;
+}
 </style>
 </head>
 <body>
@@ -52,21 +56,24 @@ button:hover {
 <br>
 <button onclick="sendData('login')">Մուտք</button>
 <button onclick="sendData('register')">Գրանցում</button>
+<div id="status"></div>
 </div>
 
 <script>
 const tg = window.Telegram.WebApp;
+const statusDiv = document.getElementById("status");
 
 function sendData(action) {
-    const username = document.getElementById("username").value;
+    const username = document.getElementById("username").value.trim();
     const password = document.getElementById("password").value;
 
     if(!username || !password){
-        alert("❌ Պետք է լրացնես username և password");
+        statusDiv.innerText = "❌ Պետք է լրացնես username և password";
         return;
     }
 
     tg.sendData(JSON.stringify({action, username, password}));
+    statusDiv.innerText = "⏳ Պահանջվող տվյալները ուղարկվում են...";
 }
 </script>
 </body>
