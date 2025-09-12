@@ -1,39 +1,59 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="hy">
 <head>
     <meta charset="UTF-8">
     <title>MyBot WebApp</title>
     <style>
         body { font-family: Arial, sans-serif; text-align: center; padding: 50px; }
-        h1 { color: #333; }
         input, button { padding: 10px; font-size: 16px; margin: 10px; }
+        #main { display: none; }
     </style>
 </head>
 <body>
-    <h1>Բարի գալուստ MyBot WebApp 🎉</h1>
-    <p>Մուտք գործի՛ր կամ գրանցվիր:</p>
-    <input type="text" id="username" placeholder="Օգտվողի անուն">
-    <input type="password" id="password" placeholder="Գաղտնաբառ">
-    <br>
-    <button onclick="login()">Մուտք</button>
+    <div id="auth">
+        <h1>Բարի գալուստ MyBot WebApp 🎉</h1>
+        <p>Մուտք գործի՛ր կամ գրանցվիր:</p>
+        <input type="text" id="username" placeholder="Օգտվողի անուն">
+        <input type="password" id="password" placeholder="Գաղտնաբառ">
+        <br>
+        <button onclick="login()">Մուտք</button>
+        <button onclick="register()">Գրանցում</button>
+    </div>
+
+    <div id="main">
+        <h1>👋 Բարի գալուստ, <span id="user-display"></span>!</h1>
+        <p>Դա ձեր գլխավոր էջն է MyBot WebApp-ում</p>
+    </div>
 
     <script>
         function login() {
             const username = document.getElementById("username").value;
             const password = document.getElementById("password").value;
+            if(!username || !password){ alert("Լրացրեք բոլոր դաշտերը!"); return; }
 
-            if(!username || !password) {
-                alert("Լրացրեք բոլոր դաշտերը!");
-                return;
+            if(window.Telegram.WebApp){
+                Telegram.WebApp.sendData(JSON.stringify({action: "login", username, password}));
             }
 
-            // Telegram WebApp հետ կապ
-            if(window.Telegram.WebApp) {
-                Telegram.WebApp.sendData(JSON.stringify({username, password}));
-                alert("Մուտքը հաջողությամբ ուղարկվեց բոտին!");
-            } else {
-                alert("Telegram WebApp միջավայրում բացեք այս էջը");
+            showMain(username);
+        }
+
+        function register() {
+            const username = document.getElementById("username").value;
+            const password = document.getElementById("password").value;
+            if(!username || !password){ alert("Լրացրեք բոլոր դաշտերը!"); return; }
+
+            if(window.Telegram.WebApp){
+                Telegram.WebApp.sendData(JSON.stringify({action: "register", username, password}));
             }
+
+            alert("Գրանցումը հաջողությամբ ավարտվեց, հիմա կարող եք մուտք գործել");
+        }
+
+        function showMain(username){
+            document.getElementById("auth").style.display = "none";
+            document.getElementById("main").style.display = "block";
+            document.getElementById("user-display").innerText = username;
         }
     </script>
 </body>
