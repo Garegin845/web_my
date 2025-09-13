@@ -1,36 +1,55 @@
-<!-- ...existing code... -->
+<!DOCTYPE html>
+<html lang="hy">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Գրանցում / Մուտք</title>
+<style>
+body { font-family: Arial; display:flex; justify-content:center; align-items:center; height:100vh; background:#f0f0f0; margin:0; }
+form { background:#fff; padding:30px; border-radius:10px; box-shadow:0 0 20px rgba(0,0,0,0.2); display:flex; flex-direction:column; width:300px; }
+input, button { margin:10px 0; padding:10px; border-radius:5px; font-size:16px; }
+input { border:1px solid #ccc; }
+button { border:none; color:white; background:#007BFF; cursor:pointer; }
+button:hover { background:#0056b3; }
+.success { color:green; text-align:center; font-weight:bold; }
+.error { color:red; text-align:center; font-weight:bold; }
+.switch-btn { background:#28a745; margin-top:0; }
+.switch-btn:hover { background:#218838; }
+</style>
+</head>
+<body>
+<form id="authForm">
+  <h2 id="formTitle">Գրանցում</h2>
+  <input type="text" id="username" placeholder="Username" required>
+  <input type="password" id="password" placeholder="Password" required>
+  <button type="submit" id="submitBtn">Գրանցվել</button>
+  <button type="button" class="switch-btn" id="switchBtn">Մուտք</button>
+  <div class="success" id="successMessage"></div>
+  <div class="error" id="errorMessage"></div>
+</form>
+
 <script>
-const tg = window.Telegram?.WebApp || {sendData:()=>console.log("No Telegram, data:", arguments)};
-let mode="register";
+const tg = window.Telegram.WebApp;
+let mode = "register";
 
-// Telegram WebApp initialization
-if (tg.initData) {
-    tg.expand(); // maximize WebApp window
-}
-
-document.getElementById("switchBtn").addEventListener("click", ()=>{
-    mode=mode==="register"?"login":"register";
-    document.getElementById("formTitle").textContent=mode==="register"?"Գրանցում":"Մուտք";
-    document.getElementById("submitBtn").textContent=mode==="register"?"Գրանցվել":"Մուտք";
-    document.getElementById("switchBtn").textContent=mode==="register"?"Մուտք":"Գրանցում";
-    document.getElementById("successMessage").textContent="";
-    document.getElementById("errorMessage").textContent="";
+document.getElementById("switchBtn").addEventListener("click", function(){
+  if(mode==="register"){ mode="login"; document.getElementById("formTitle").textContent="Մուտք"; document.getElementById("submitBtn").textContent="Մուտք"; this.textContent="Գրանցում"; }
+  else{ mode="register"; document.getElementById("formTitle").textContent="Գրանցում"; document.getElementById("submitBtn").textContent="Գրանցվել"; this.textContent="Մուտք"; }
+  document.getElementById("successMessage").textContent="";
+  document.getElementById("errorMessage").textContent="";
 });
 
-document.getElementById("authForm").addEventListener("submit", e=>{
-    e.preventDefault();
-    const username=document.getElementById("username").value.trim();
-    const password=document.getElementById("password").value;
-    if(!username||!password){
-        document.getElementById("errorMessage").textContent="Լրացրու բոլոր դաշտերը";
-        return;
-    }
-    tg.sendData(JSON.stringify({action:mode,username,password}));
-    document.getElementById("successMessage").textContent=mode==="register"?"✅ Գրանցվեցիր!":"🔑 Մուտք ուղարկված!";
-    document.getElementById("errorMessage").textContent="";
-    e.target.reset();
-    // Optional: Close WebApp after submit
-    if (tg.close) setTimeout(()=>tg.close(), 1200);
+document.getElementById("authForm").addEventListener("submit", function(e){
+  e.preventDefault();
+  const username = document.getElementById("username").value.trim();
+  const password = document.getElementById("password").value;
+  if(!username || !password){ document.getElementById("errorMessage").textContent="Լրացրու բոլոր դաշտերը"; return; }
+
+  tg.sendData(JSON.stringify({action:mode, username, password}));
+  document.getElementById("successMessage").textContent = mode==="register" ? "✅ Գրանցվեցիր!" : "🔑 Մուտք ուղարկված!";
+  document.getElementById("errorMessage").textContent="";
+  this.reset();
 });
 </script>
-<!-- ...existing code... -->
+</body>
+</html>
