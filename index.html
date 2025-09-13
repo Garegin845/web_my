@@ -1,100 +1,98 @@
-<!-- auth.html -->
 <!doctype html>
 <html lang="hy">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Գրանցում / Մուտք</title>
-  <style>
-    :root { --bg:#0f1724; --card:#0b1220; --accent:#06b6d4; --muted:#94a3b8; color-scheme: dark; }
-    body { margin:0; font-family:Inter, Arial, sans-serif; background: linear-gradient(180deg,#071024 0%, #04132a 100%); display:flex; align-items:center; justify-content:center; height:100vh; }
-    .card { width: 360px; background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01)); border-radius:16px; padding:24px; box-shadow: 0 10px 30px rgba(2,6,23,0.6); color:#e6eef6; }
-    h1 { font-size:20px; margin:0 0 12px 0; }
-    label { display:block; margin-top:10px; font-size:13px; color:var(--muted); }
-    input { width:100%; padding:10px 12px; margin-top:6px; border-radius:8px; border:1px solid rgba(255,255,255,0.06); background:rgba(255,255,255,0.02); color:inherit; outline:none; }
-    .row { display:flex; gap:8px; margin-top:12px; }
-    button { flex:1; padding:10px 12px; border-radius:10px; border:none; cursor:pointer; font-weight:600; }
-    .btn-primary { background:linear-gradient(90deg,var(--accent), #0891b2); color:#021826; }
-    .btn-ghost { background:transparent; border:1px solid rgba(255,255,255,0.06); color:var(--muted); }
-    .msg { margin-top:12px; font-size:14px; min-height:18px; }
-    .success { color:#8be5c9; }
-    .error { color:#ff8b8b; }
-    .small { font-size:12px; color:var(--muted); margin-top:8px; text-align:center; }
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Auth — Debug</title>
+<style>
+  body{font-family:Arial;display:flex;align-items:center;justify-content:center;height:100vh;background:#f4f7fb;margin:0}
+  .card{width:360px;background:white;padding:20px;border-radius:12px;box-shadow:0 8px 30px rgba(11,22,40,0.08)}
+  input{width:100%;padding:10px;margin-top:8px;border:1px solid #ddd;border-radius:8px}
+  .row{display:flex;gap:8px;margin-top:12px}
+  button{flex:1;padding:10px;border-radius:8px;border:0;cursor:pointer}
+  .primary{background:#007bff;color:white}
+  .ghost{background:#e9eef7}
+  .msg{margin-top:12px;min-height:20px}
+  .error{color:#b00020}
+  .ok{color:#007b23}
+  .hint{font-size:13px;color:#666;margin-top:8px}
+  .warn{background:#fff3cd;border-radius:8px;padding:8px;margin-top:8px;color:#665c00}
+</style>
 </head>
 <body>
-  <div class="card" role="main">
-    <h1 id="title">Գրանցում</h1>
+<div class="card">
+  <h3 id="title">Գրանցում</h3>
 
-    <label for="email">Էլ․ փոստ</label>
-    <input id="email" type="email" placeholder="you@example.com" autocomplete="email">
+  <label>Էլ․ հասցե</label>
+  <input id="email" type="email" placeholder="you@example.com">
 
-    <label for="password">Գաղտնաբառ</label>
-    <input id="password" type="password" placeholder="Ձեր գաղտնաբառը">
+  <label style="margin-top:8px">Գաղտնաբառ</label>
+  <input id="password" type="password" placeholder="Գաղտնաբառ">
 
-    <div class="row">
-      <button id="submitBtn" class="btn-primary">Գրանցվել</button>
-      <button id="toggleBtn" class="btn-ghost">Մուտք</button>
-    </div>
-
-    <div class="msg" id="msg"></div>
-    <div class="small">Նշում՝ ձեր տվյալները ապահով ձեւով կուղարկվեն բоту՝ պատրաստված hashing-ով։</div>
+  <div class="row">
+    <button id="submitBtn" class="primary">Գրանցվել</button>
+    <button id="toggleBtn" class="ghost">Մուտք</button>
   </div>
 
-  <script>
-    const tg = window.Telegram.WebApp;
-    tg.expand(); // տարածել iframe-ը եթե կարելի է
+  <div class="msg" id="msg"></div>
 
-    let mode = "register";
-    const emailEl = document.getElementById("email");
-    const passEl = document.getElementById("password");
-    const submitBtn = document.getElementById("submitBtn");
-    const toggleBtn = document.getElementById("toggleBtn");
-    const titleEl = document.getElementById("title");
-    const msgEl = document.getElementById("msg");
+  <div class="hint">Նշում: Սա WebApp պետք է բացել **Telegram** հավելվածում (ոչ սովորական բրաուզերում). Եթե տեքստը տեսնեք՝ բացվել է առանց Telegram:</div>
+  <div id="tgCheck" class="warn" style="display:none"></div>
+</div>
 
-    function setMsg(text, cls){
-      msgEl.textContent = text;
-      msgEl.className = "msg " + (cls||"");
+<script>
+  const maybeTg = window.Telegram && window.Telegram.WebApp ? window.Telegram.WebApp : null;
+  const msgEl = document.getElementById("msg");
+  const tgCheck = document.getElementById("tgCheck");
+
+  function setMsg(text, cls){
+    msgEl.textContent = text;
+    msgEl.className = "msg " + (cls||"");
+  }
+
+  if(!maybeTg){
+    tgCheck.style.display = "block";
+    tgCheck.textContent = "ՏԵՂՑԱՐԿՎԱԾ չէ Telegram WebApp API — սա նշանակում է էջը բացվել է ոչ Telegram-ի մեջ և sendData չի աշխատի։ Բացեք էջը սեղմելով բոտի WebApp կոճակը (Telegram).";
+    // disable buttons:
+    document.getElementById("submitBtn").disabled = true;
+    document.getElementById("toggleBtn").disabled = true;
+  } else {
+    try { maybeTg.expand(); } catch(e) {}
+  }
+
+  let mode = "register";
+  document.getElementById("toggleBtn").addEventListener("click", ()=>{
+    mode = mode==="register" ? "login" : "register";
+    document.getElementById("title").textContent = mode==="register" ? "Գրանցում" : "Մուտք";
+    document.getElementById("submitBtn").textContent = mode==="register" ? "Գրանցվել" : "Մուտք";
+    setMsg("");
+  });
+
+  document.getElementById("submitBtn").addEventListener("click", ()=>{
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value;
+    if(!email || !password){ setMsg("Լրացրեք բոլոր դաշտերը", "error"); return; }
+
+    const payload = { action: mode, email, password };
+
+    if(!maybeTg){
+      // fallback: show payload so user can see it's prepared
+      setMsg("DEBUG: պատրաստվում է ուղարկել payload (բայց tg չկա). Դիտեք console:", "error");
+      console.log("DEBUG payload:", payload);
+      return;
     }
 
-    toggleBtn.addEventListener("click", () => {
-      if(mode === "register"){
-        mode = "login";
-        titleEl.textContent = "Մուտք";
-        submitBtn.textContent = "Մուտք";
-        toggleBtn.textContent = "Գրանցում";
-        setMsg("");
-      } else {
-        mode = "register";
-        titleEl.textContent = "Գրանցում";
-        submitBtn.textContent = "Գրանցվել";
-        toggleBtn.textContent = "Մուտք";
-        setMsg("");
-      }
-    });
-
-    submitBtn.addEventListener("click", () => {
-      const email = emailEl.value.trim();
-      const password = passEl.value;
-
-      if(!email || !password){
-        setMsg("Լրացրեք բոլոր դաշտերը", "error");
-        return;
-      }
-
-      // Ուղարկել բոտին
-      const payload = { action: mode, email, password };
-      try {
-        tg.sendData(JSON.stringify(payload));
-        setMsg(mode === "register" ? "✅ Գրանցման տվյալները ուղարկվում են..." : "🔑 Մուտքի տվյալները ուղարկվում են...", "success");
-        // հնարավոր է ցույց տալ, որ սպասում ես ձայնին
-      } catch (e) {
-        setMsg("❌ Առաջացավ խնդիր տվյալների ուղարկման ժամանակ", "error");
-      }
-      // չներդնել նոր տվյալներ
-      passEl.value = "";
-    });
-  </script>
+    try {
+      // show debug message
+      setMsg("Ուղարկվում է բоту...", "ok");
+      maybeTg.sendData(JSON.stringify(payload));
+      // note: sendData չի ներմուծում synchronous պատասխան — պատասխանը կգա Telegram message-ում
+      setMsg("✅ Տվյալները ուղարկվեցին: Ստուգեք բոտի պատասխանը Telegram-ում։", "ok");
+    } catch(err){
+      console.error("sendData error:", err);
+      setMsg("❌ Առաջացավ սխալ sendData-ի ժամանակ: Console-ում տես նկարը", "error");
+    }
+  });
+</script>
 </body>
 </html>
