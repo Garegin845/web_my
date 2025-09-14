@@ -45,7 +45,18 @@
 
   <script>
     const tg = window.Telegram.WebApp;
-    tg.expand(); // տարածել iframe-ը եթե կարելի է
+  tg.expand();
+
+  submitBtn.addEventListener("click", () => {
+    const email = emailEl.value.trim();
+    const password = passEl.value;
+    if(!email || !password){ setMsg("Լրացրեք բոլոր դաշտերը","error"); return; }
+    const payload = { action: mode, email, password };
+    console.log("Sending payload:", payload);
+    tg.sendData(JSON.stringify(payload));
+    setMsg(mode === "register" ? "✅ Գրանցման տվյալները ուղարկվում են..." : "🔑 Մուտքի տվյալները ուղարկվում են...", "success");
+    passEl.value = "";
+  });
 
     let mode = "register";
     const emailEl = document.getElementById("email");
