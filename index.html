@@ -1,113 +1,78 @@
-<!-- auth.html -->
 <!doctype html>
 <html lang="hy">
 <head>
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
-
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Գրանցում / Մուտք</title>
-  <style>
-    :root { --bg:#0f1724; --card:#0b1220; --accent:#06b6d4; --muted:#94a3b8; color-scheme: dark; }
-    body { margin:0; font-family:Inter, Arial, sans-serif; background: linear-gradient(180deg,#071024 0%, #04132a 100%); display:flex; align-items:center; justify-content:center; height:100vh; }
-    .card { width: 360px; background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01)); border-radius:16px; padding:24px; box-shadow: 0 10px 30px rgba(2,6,23,0.6); color:#e6eef6; }
-    h1 { font-size:20px; margin:0 0 12px 0; }
-    label { display:block; margin-top:10px; font-size:13px; color:var(--muted); }
-    input { width:100%; padding:10px 12px; margin-top:6px; border-radius:8px; border:1px solid rgba(255,255,255,0.06); background:rgba(255,255,255,0.02); color:inherit; outline:none; }
-    .row { display:flex; gap:8px; margin-top:12px; }
-    button { flex:1; padding:10px 12px; border-radius:10px; border:none; cursor:pointer; font-weight:600; }
-    .btn-primary { background:linear-gradient(90deg,var(--accent), #0891b2); color:#021826; }
-    .btn-ghost { background:transparent; border:1px solid rgba(255,255,255,0.06); color:var(--muted); }
-    .msg { margin-top:12px; font-size:14px; min-height:18px; }
-    .success { color:#8be5c9; }
-    .error { color:#ff8b8b; }
-    .small { font-size:12px; color:var(--muted); margin-top:8px; text-align:center; }
-  </style>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Դասերի ընտրություն</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+  body { margin:0; font-family:Arial,sans-serif; background:#0f1724; color:#e6eef6; display:flex; justify-content:center; align-items:center; height:100vh; }
+  .card { background:#0b1220; padding:24px; border-radius:16px; width:360px; box-shadow:0 10px 30px rgba(0,0,0,0.6); }
+  select, button { width:100%; padding:10px; margin-top:12px; border-radius:8px; border:none; outline:none; font-size:14px; }
+  button { cursor:pointer; background:#06b6d4; color:#021826; font-weight:600; }
+  .topic { margin-top:16px; font-size:14px; padding:10px; background:rgba(255,255,255,0.05); border-radius:8px; }
+</style>
 </head>
 <body>
-  <div class="card" role="main">
-    <h1 id="title">Գրանցում</h1>
+<div class="card">
+  <h2>Ընտրիր դասարանը</h2>
+  <select id="classSelect">
+    <option value="">-- Դասարան --</option>
+    <option value="1">1-րդ</option>
+    <option value="2">2-րդ</option>
+    <option value="3">3-րդ</option>
+    <option value="4">4-րդ</option>
+  </select>
 
-    <label for="email">Էլ․ փոստ</label>
-    <input id="email" type="email" placeholder="you@example.com" autocomplete="email">
+  <select id="subjectSelect" disabled>
+    <option value="">-- Առարկա --</option>
+  </select>
 
-    <label for="password">Գաղտնաբառ</label>
-    <input id="password" type="password" placeholder="Ձեր գաղտնաբառը">
+  <div class="topic" id="topicDisplay">Թեման կցուցադրվի այստեղ</div>
+</div>
 
-    <div class="row">
-      <button id="submitBtn" class="btn-primary">Գրանցվել</button>
-      <button id="toggleBtn" class="btn-ghost">Մուտք</button>
-    </div>
-
-    <div class="msg" id="msg"></div>
-    <div class="small">Նշում՝ ձեր տվյալները ապահով ձեւով կուղարկվեն բоту՝ պատրաստված hashing-ով։</div>
-  </div>
-
-  <script>
-    const tg = window.Telegram.WebApp;
+<script>
+  const tg = window.Telegram.WebApp;
   tg.expand();
 
-  submitBtn.addEventListener("click", () => {
-    const email = emailEl.value.trim();
-    const password = passEl.value;
-    if(!email || !password){ setMsg("Լրացրեք բոլոր դաշտերը","error"); return; }
-    const payload = { action: mode, email, password };
-    console.log("Sending payload:", payload);
-    tg.sendData(JSON.stringify(payload));
-    setMsg(mode === "register" ? "✅ Գրանցման տվյալները ուղարկվում են..." : "🔑 Մուտքի տվյալները ուղարկվում են...", "success");
-    passEl.value = "";
+  const classSelect = document.getElementById('classSelect');
+  const subjectSelect = document.getElementById('subjectSelect');
+  const topicDisplay = document.getElementById('topicDisplay');
+
+  const subjects = {
+    "1": { "Հայոց լեզու": "Բառերի ուսուցում, հնչյուններ", "Մաթեմատիկա": "Հաշիվներ 1-10" },
+    "2": { "Հայոց լեզու": "Բառերի համադրություն, նախադասություն", "Մաթեմատիկա": "Հաշվարկներ 1-20" },
+    "3": { "Հայոց լեզու": "Կարդալ և գրել նախադասություններ", "Մաթեմատիկա": "Բաժանել և բազմապատկել" },
+    "4": { "Հայոց լեզու": "Նյութական և մտավոր վարժություններ", "Մաթեմատիկա": "Համատեղ թվային գործողություններ" }
+  };
+
+  classSelect.addEventListener('change', () => {
+    const cls = classSelect.value;
+    subjectSelect.innerHTML = '<option value="">-- Առարկա --</option>';
+    topicDisplay.textContent = "Թեման կցուցադրվի այստեղ";
+
+    if(cls && subjects[cls]){
+      Object.keys(subjects[cls]).forEach(sub => {
+        const opt = document.createElement('option');
+        opt.value = sub;
+        opt.textContent = sub;
+        subjectSelect.appendChild(opt);
+      });
+      subjectSelect.disabled = false;
+    } else {
+      subjectSelect.disabled = true;
+    }
   });
 
-    let mode = "register";
-    const emailEl = document.getElementById("email");
-    const passEl = document.getElementById("password");
-    const submitBtn = document.getElementById("submitBtn");
-    const toggleBtn = document.getElementById("toggleBtn");
-    const titleEl = document.getElementById("title");
-    const msgEl = document.getElementById("msg");
-
-    function setMsg(text, cls){
-      msgEl.textContent = text;
-      msgEl.className = "msg " + (cls||"");
+  subjectSelect.addEventListener('change', () => {
+    const cls = classSelect.value;
+    const sub = subjectSelect.value;
+    if(cls && sub && subjects[cls][sub]){
+      topicDisplay.textContent = subjects[cls][sub];
+    } else {
+      topicDisplay.textContent = "Թեման կցուցադրվի այստեղ";
     }
-
-    toggleBtn.addEventListener("click", () => {
-      if(mode === "register"){
-        mode = "login";
-        titleEl.textContent = "Մուտք";
-        submitBtn.textContent = "Մուտք";
-        toggleBtn.textContent = "Գրանցում";
-        setMsg("");
-      } else {
-        mode = "register";
-        titleEl.textContent = "Գրանցում";
-        submitBtn.textContent = "Գրանցվել";
-        toggleBtn.textContent = "Մուտք";
-        setMsg("");
-      }
-    });
-
-    submitBtn.addEventListener("click", () => {
-      const email = emailEl.value.trim();
-      const password = passEl.value;
-
-      if(!email || !password){
-        setMsg("Լրացրեք բոլոր դաշտերը", "error");
-        return;
-      }
-
-      // Ուղարկել բոտին
-      const payload = { action: mode, email, password };
-      try {
-        tg.sendData(JSON.stringify(payload));
-        setMsg(mode === "register" ? "✅ Գրանցման տվյալները ուղարկվում են..." : "🔑 Մուտքի տվյալները ուղարկվում են...", "success");
-        // հնարավոր է ցույց տալ, որ սպասում ես ձայնին
-      } catch (e) {
-        setMsg("❌ Առաջացավ խնդիր տվյալների ուղարկման ժամանակ", "error");
-      }
-      // չներդնել նոր տվյալներ
-      passEl.value = "";
-    });
-  </script>
+  });
+</script>
 </body>
 </html>
